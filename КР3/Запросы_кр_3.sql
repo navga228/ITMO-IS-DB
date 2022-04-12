@@ -129,6 +129,14 @@ on a.ProductSubcategoryID = p.ProductSubcategoryID
 group by p.Name
 having count(*) > 5 */
 
+-- Найти все подкатегории товаров, их название, у которых красных товаров не менее 1
+/* SELECT psc.Name
+FROM Production.Product AS p
+JOIN Production.ProductSubcategory AS psc 
+ON p.ProductSubcategoryID = psc.ProductSubcategoryID
+WHERE p.Color = 'Red'
+GROUP BY psc.ProductSubcategoryID, psc.Name */
+
 -- Задание 12
 -- Найти названия тех категорий товаров, где количество товаров более 20
 /* SELECT pc.Name, COUNT(*)
