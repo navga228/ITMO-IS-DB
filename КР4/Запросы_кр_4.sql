@@ -64,3 +64,174 @@ USE AdventureWorks2017;
 --     FROM Production.Product 
 --     WHERE Color = 'Red' and ListPrice = (SELECT MAX(ListPrice) FROM Production.Product)
 -- )
+
+-- Задание 5
+-- Найти название категории с наибольшим количеством товаров (с подзапросом)
+-- SELECT Name, ProductCategoryID
+-- FROM Production.ProductCategory
+-- WHERE ProductCategoryID = 
+-- (
+--     SELECT ProductCategoryID
+--     FROM Production.ProductSubcategory 
+--     WHERE ProductSubcategoryID = 
+--     (
+--         SELECT ProductSubcategoryID
+--         FROM Production.Product
+--         GROUP BY ProductSubcategoryID
+--         HAVING COUNT(*)=
+--         (
+--             SELECT TOP 1 COUNT(*)
+--             FROM [Production].[Product]
+--             WHERE ProductSubcategoryID IS NOT NULL
+--             GROUP BY [ProductSubcategoryID]
+--             ORDER BY 1 DESC
+--         )
+--     )
+-- )
+
+-- Задание 6
+-- Название товаров, чей цвет совпадает с товаром, чья цена больше 2000
+-- SELECT Name
+-- FROM Production.Product
+-- WHERE Color IN 
+-- (
+--     SELECT Color
+--     FROM Production.Product
+--     WHERE ListPrice > 2000
+-- )
+
+-- Задание 7
+-- Найти номер покупателя и самый дорогой купленный им товар для каждого покупателя
+-- select distinct soh.[CustomerID],
+-- (
+--     select MAX(sod1.[UnitPrice])
+--     from [Sales].SalesOrderDetail as sod1 join [Sales].SalesOrderHeader as soh1
+--     on sod1.[SalesOrderID] = soh1.[SalesOrderID]
+--     where soh1.[CustomerID] = soh.[CustomerID]
+-- )
+-- from [Sales].SalesOrderHeader as soh
+-- ORDER BY 1
+
+-- Задание 8
+-- Самый дорогой товар красного цвета в каждой подкатегории
+-- SELECT Name
+-- FROM Production.Product AS p
+-- WHERE p.Name IN 
+-- (
+--     SELECT Name
+--     FROM Production.Product
+--     WHERE Color = 'Red' AND ProductSubcategoryID IN
+--     (
+--         SELECT ProductSubcategoryID 
+--         FROM Production.Product AS p1
+--         WHERE ListPrice = 
+--         (
+--             SELECT MAX(ListPrice)
+--             FROM Production.Product p2
+--             WHERE p1.ProductSubcategoryID = p2.ProductSubcategoryID
+--         )   
+--     )
+-- )
+
+-- Задание 10
+-- Найти номера чеков, таких что покупатели, к которым относятся эти чеки,
+-- ходили в магазин более трех раз, т.е. имеют более трех чеков
+-- SELECT  SalesOrderDetailID, SalesOrderID
+-- FROM Sales.SalesOrderDetail AS sod
+-- WHERE SalesOrderID = 
+-- (
+--     SELECT SalesOrderID
+--     FROM Sales.SalesOrderHeader AS soh
+--     WHERE sod.SalesOrderID = soh.SalesOrderID AND sod.SalesOrderID IN 
+--     (
+--         SELECT SalesOrderID
+--         FROM Sales.SalesOrderDetail
+--         GROUP BY SalesOrderID
+--         HAVING COUNT(*) > 3
+--     )
+-- )
+
+-- Проверка 
+-- SELECT  COUNT(SalesOrderID)
+-- FROM Sales.SalesOrderDetail AS sod
+-- WHERE SalesOrderID = 
+-- (
+--     SELECT SalesOrderID
+--     FROM Sales.SalesOrderHeader AS soh
+--     WHERE sod.SalesOrderID = soh.SalesOrderID AND sod.SalesOrderID IN 
+--     (
+--         SELECT SalesOrderID
+--         FROM Sales.SalesOrderDetail
+--         GROUP BY SalesOrderID
+--         HAVING COUNT(*) > 3
+--     )
+-- )
+-- GROUP BY SalesOrderID
+-- HAVING COUNT(*) <= 2
+
+-- Задание 11
+-- Найти номера категорий товаров, такие что в них товаров с красным цветом больше, чем с черным. Решить с помощью подзапроса
+-- SELECT ProductCategoryID
+-- FROM Production.ProductCategory
+-- WHERE ProductCategoryID IN 
+-- (
+--     SELECT ProductSubcategoryID
+--     FROM Production.ProductSubcategory psc
+--     WHERE ProductSubcategoryID IN
+--     (
+--         SELECT ProductSubcategoryID
+--         FROM Production.Product 
+--         WHERE 
+--         (
+--             SELECT COUNT(*)
+--             FROM Production.Product
+--             WHERE Color = 'Red' AND psc.ProductSubcategoryID = ProductSubcategoryID
+--             GROUP BY Color
+--         ) > 
+--         (
+--             SELECT COUNT(*)
+--             FROM Production.Product
+--             WHERE Color = 'Black' AND psc.ProductSubcategoryID = ProductSubcategoryID
+--             GROUP BY Color
+--         )
+--     )
+-- )
+
+-- Задание 12
+-- Найти название категории самого продаваемого товара (по количеству чеков на которые он был продан)
+-- SELECT Name
+-- FROM Production.ProductCategory
+-- WHERE ProductCategoryID IN 
+-- (
+--     SELECT ProductCategoryID
+--     FROM Production.ProductSubcategory AS psc JOIN Production.Product AS p
+--     ON psc.ProductSubcategoryID = p.ProductSubcategoryID
+--     WHERE ProductID = 
+--     (
+--         SELECT TOP 1 sod.ProductID
+--         FROM Production.Product AS p JOIN Sales.SalesOrderDetail sod
+--         ON p.ProductID = sod.ProductID
+--         GROUP BY sod.ProductID
+--         ORDER BY COUNT(*) DESC
+--     )
+-- )
+
+-- Задание 17
+-- Найти номера покупателей покупавших товары минимум двух подкатегорий. Использовать подзапрос.
+-- SELECT​ DISTINCT CustomerID
+-- from​ Sales.SalesOrderHeader
+-- where​ CustomerID ​in (
+--     select​ soh1.CustomerID
+-- ​   from​ Sales.SalesOrderHeader ​as​ SOH1
+--    join Sales.SalesOrderDetail as SOD1
+--    on SOH1.SalesOrderID = SOD1.SalesOrderID
+--    join Production.Product as SOD2
+--    on SOD1.ProductID = SOD2.ProductID
+--    ​group by​ SOH1.CustomerID
+--    ​having​ count (SOD2.ProductSubcategoryID) >= ​2
+--    )
+
+
+
+
+
